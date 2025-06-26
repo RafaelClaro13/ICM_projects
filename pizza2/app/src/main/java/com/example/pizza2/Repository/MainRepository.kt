@@ -8,6 +8,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.example.pizza2.Domain.BannerModel
 import com.example.pizza2.Domain.CategoryModel
+import com.example.pizza2.Domain.ItemsModel
+import com.google.firebase.database.Query
 
 class MainRepository {
 
@@ -53,5 +55,48 @@ class MainRepository {
             }
         })
         return listData
+    }
+
+    fun loadPopular(): LiveData<MutableList<ItemsModel>> {
+        val listData = MutableLiveData<MutableList<ItemsModel>>()
+        val ref = firebaseDatabase.getReference("Popular")
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<ItemsModel>()
+                for (childSnapshot in snapshot.children) {
+                    val item = childSnapshot.getValue(ItemsModel::class.java)
+                    item?.let { list.add(it) }
+                }
+                listData.value = list
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("not yet implemented ")
+            }
+        })
+        return listData
+    }
+
+    fun loadItemCategory(categoryId: String): LiveData<MutableList<ItemsModel>>{
+        val itemsLiveData= MutableLiveData<MutableList<ItemsModel>>()
+        val ref= firebaseDatabase.getReference("Items")
+        val query: Query=ref.orderByChild("category").equalTo(categoryId)
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<ItemsModel>()
+                for (childSnapshot in snapshot.children) {
+                    val item = childSnapshot.getValue(ItemsModel::class.java)
+                    item?.let { list.add(it) }
+                }
+                itemsLiveData.value = list
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+        return itemsLiveData
     }
 }
