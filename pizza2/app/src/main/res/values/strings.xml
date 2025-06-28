@@ -10,4 +10,7 @@
     <string name="wishlist">Wishlist</string>
     <string name="myorder">MyOrder</string>
     <string name="profile">Profile</string>
+    <string name="coffee_size">Coffee Size</string>
+    <string name="qty">Qty.</string>
+    <string name="Description">Description</string>
 </resources>
